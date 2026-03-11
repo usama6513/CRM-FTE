@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Success FTE - WhatsApp Support</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --whatsapp-green: #10b981;
+            --whatsapp-dark: #059669;
+            --whatsapp-darker: #047857;
+            --whatsapp-light: #f0fdf4;
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #64748b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --light: #f8fafc;
+            --dark: #0f172a;
+            --gray: #e2e8f0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f1f5f9;
+            min-height: 100vh;
+        }
+
+        .main-content {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 260px;
+            background: white;
+            border-right: 1px solid var(--gray);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--gray);
+            margin-bottom: 1rem;
+        }
+
+        .sidebar h3 {
+            color: var(--dark);
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .quick-action {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .quick-action:hover {
+            background: #f1f5f9;
+        }
+
+        .quick-action.active {
+            background: #dbeafe;
+            color: var(--primary);
+            border-left: 3px solid var(--primary);
+        }
+
+        .quick-action i {
+            width: 20px;
+            text-align: center;
+            color: var(--whatsapp-dark);
+        }
+
+        .whatsapp-faq {
+            margin-top: auto;
+            background: white;
+            padding: 1.25rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .faq-item {
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--gray);
+        }
+
+        .faq-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .faq-item h4 {
+            color: var(--dark);
+            margin-bottom: 0.25rem;
+            font-size: 0.875rem;
+        }
+
+        .faq-item p {
+            color: var(--secondary);
+            font-size: 0.75rem;
+            line-height: 1.4;
+        }
+
+        .main-content-area {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .header h1 i {
+            color: var(--whatsapp-green);
+        }
+
+        .header p {
+            color: var(--secondary);
+            font-size: 1.1rem;
+        }
+
+        .chat-section {
+            max-width: 800px;
+            margin: 0 auto 2rem;
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--gray);
+        }
+
+        .section-header h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .chat-container {
+            background: white;
+            border-radius: 0.75rem;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .chat-header {
+            background: var(--whatsapp-light);
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            border-bottom: 1px solid var(--gray);
+        }
+
+        .chat-header h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--whatsapp-darker);
+        }
+
+        .chat-messages {
+            height: 300px;
+            overflow-y: auto;
+            padding: 1.5rem;
+            background: var(--whatsapp-light);
+        }
+
+        .message {
+            margin-bottom: 1rem;
+            max-width: 70%;
+        }
+
+        .message.own {
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .message-bubble {
+            padding: 0.75rem 1rem;
+            border-radius: 0.75rem;
+            display: inline-block;
+            word-wrap: break-word;
+        }
+
+        .message.own .message-bubble {
+            background: var(--whatsapp-green);
+            color: white;
+            border-radius: 0.75rem 0.25rem 0.25rem 0.75rem;
+        }
+
+        .message.other .message-bubble {
+            background: white;
+            color: var(--whatsapp-darker);
+            border-radius: 0.25rem 0.75rem 0.75rem 0.25rem;
+        }
+
+        .message-time {
+            font-size: 0.75rem;
+            color: var(--secondary);
+            margin-top: 0.25rem;
+            display: block;
+        }
+
+        .chat-input {
+            display: flex;
+            padding: 1rem;
+            background: white;
+            border-top: 1px solid var(--gray);
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--gray);
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            margin-right: 0.5rem;
+        }
+
+        .chat-input button {
+            background: var(--whatsapp-green);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .chat-input button:hover {
+            background: var(--whatsapp-darker);
+        }
+
+        .whatsapp-form {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--dark);
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--gray);
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--whatsapp-green);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, var(--whatsapp-green) 0%, var(--whatsapp-dark) 100%);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .status {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin: 1rem 0;
+            display: none;
+        }
+
+        .status.success {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .status.error {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                border-right: none;
+                border-bottom: 1px solid var(--gray);
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-content">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h3>Support Channels</h3>
+            </div>
+
+            <div class="quick-action">
+                <i class="fab fa-whatsapp"></i>
+                <span>WhatsApp</span>
+            </div>
+            <div class="quick-action">
+                <i class="fas fa-envelope"></i>
+                <span>Email</span>
+            </div>
+            <div class="quick-action">
+                <i class="fas fa-globe"></i>
+                <span>Web Form</span>
+            </div>
+            <div class="quick-action">
+                <i class="fas fa-phone"></i>
+                <span>Phone</span>
+            </div>
+
+            <div class="whatsapp-faq">
+                <h4>Quick FAQs</h4>
+                <div class="faq-item">
+                    <h4>How fast do you respond?</h4>
+                    <p>Within 2-5 minutes during business hours</p>
+                </div>
+                <div class="faq-item">
+                    <h4>What can I ask?</h4>
+                    <p>Technical support, billing, account help</p>
+                </div>
+                <div class="faq-item">
+                    <h4>Available 24/7?</h4>
+                    <p>Yes, our AI assistant is always available</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-content-area">
+            <div class="header">
+                <div>
+                    <h1><i class="fab fa-whatsapp"></i> WhatsApp Support</h1>
+                    <p>Chat with us instantly on WhatsApp for quick support</p>
+                </div>
+            </div>
+
+            <div class="chat-section">
+                <div class="section-header">
+                    <i class="fas fa-comments"></i>
+                    <h2>Chat with Support</h2>
+                </div>
+
+                <div class="chat-container">
+                    <div class="chat-header">
+                        <i class="fab fa-whatsapp"></i>
+                        <h3>Chat with Support</h3>
+                    </div>
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="message other">
+                            <div class="message-bubble">
+                                Hello! 👋 Welcome to TechCorp Support. How can I help you today?
+                            </div>
+                            <div class="message-time">Just now</div>
+                        </div>
+                    </div>
+                    <div class="chat-input">
+                        <input type="text" id="chatInput" placeholder="Type a message...">
+                        <button id="sendMessageBtn">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="whatsapp-form">
+                <div class="section-header">
+                    <i class="fas fa-paper-plane"></i>
+                    <h2>Send WhatsApp Message</h2>
+                </div>
+
+                <form id="whatsappForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="toPhone">Phone Number (WhatsApp format) *</label>
+                            <input type="text" id="toPhone" name="to" required placeholder="whatsapp:+1234567890">
+                        </div>
+                        <div class="form-group">
+                            <label for="messagePriority">Priority</label>
+                            <select id="messagePriority" name="priority">
+                                <option value="normal">Normal</option>
+                                <option value="high">High</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="whatsappMessage">Message *</label>
+                        <textarea id="whatsappMessage" name="body" required placeholder="Type your WhatsApp message here..."></textarea>
+                    </div>
+
+                    <div id="whatsappResult" class="status"></div>
+
+                    <button type="submit" class="btn">
+                        <i class="fab fa-whatsapp"></i>
+                        Send WhatsApp Message
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('whatsappForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const formData = {
+                to: document.getElementById('toPhone').value,
+                body: document.getElementById('whatsappMessage').value,
+                priority: document.getElementById('messagePriority').value,
+                channel: 'whatsapp'
+            };
+
+            const result = document.getElementById('whatsappResult');
+            const submitBtn = document.querySelector('.btn[type="submit"]');
+
+            // Show loading state
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+
+            try {
+                const response = await fetch('/api/whatsapp/send', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    result.className = 'status success';
+                    result.innerHTML = `
+                        <i class="fas fa-check-circle"></i>
+                        <strong>Success!</strong> Your WhatsApp message has been sent successfully.
+                        <br>Message ID: ${data.channel_message_id}
+                        <br>Delivery Status: ${data.delivery_status}
+                    `;
+                    result.style.display = 'block';
+                    document.getElementById('whatsappForm').reset();
+
+                    // Add message to chat
+                    const chatMessages = document.getElementById('chatMessages');
+                    const newMessage = document.createElement('div');
+                    newMessage.className = 'message own';
+                    newMessage.innerHTML = `
+                        <div class="message-bubble">
+                            ${formData.body}
+                        </div>
+                        <div class="message-time">Just now</div>
+                    `;
+                    chatMessages.appendChild(newMessage);
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                } else {
+                    const error = await response.json();
+                    result.className = 'status error';
+                    result.innerHTML = `
+                        <i class="fas fa-exclamation-circle"></i>
+                        <strong>Error:</strong> ${error.detail || 'Failed to send message'}
+                    `;
+                    result.style.display = 'block';
+                }
+            } catch (error) {
+                result.className = 'status error';
+                result.innerHTML = `
+                    <i class="fas fa-exclamation-circle"></i>
+                    <strong>Error:</strong> Could not send WhatsApp message. Please try again.
+                `;
+                result.style.display = 'block';
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fab fa-whatsapp"></i> Send WhatsApp Message';
+            }
+        });
+
+        // Chat functionality
+        document.getElementById('sendMessageBtn').addEventListener('click', function() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            if (message) {
+                const chatMessages = document.getElementById('chatMessages');
+                const newMessage = document.createElement('div');
+                newMessage.className = 'message own';
+                newMessage.innerHTML = `
+                    <div class="message-bubble">
+                        ${message}
+                    </div>
+                    <div class="message-time">Just now</div>
+                `;
+                chatMessages.appendChild(newMessage);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                input.value = '';
+            }
+        });
+
+        document.getElementById('chatInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                document.getElementById('sendMessageBtn').click();
+            }
+        });
+    </script>
+</body>
+</html>

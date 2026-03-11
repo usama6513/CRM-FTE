@@ -1,0 +1,1273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Success FTE - Unified Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --primary-dark: #1d4ed8;
+            --secondary: #94a3b8;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --light: #f8fafc;
+            --dark: #0f172a;
+            --darker: #020617;
+            --gray: #334155;
+            --whatsapp-green: #059669;
+            --whatsapp-darker: #047857;
+            --whatsapp-dark: #065f46;
+            --whatsapp-bg: #064e3b;
+            --email-blue: #1d4ed8;
+            --email-darker: #1e40af;
+            --email-dark: #1e3a8a;
+            --email-bg: #1e3a8a;
+            --webform-purple: #7c3aed;
+            --webform-darker: #6d28d9;
+            --webform-dark: #5b21b6;
+            --webform-bg: #5b21b6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f1f5f9;
+            min-height: 100vh;
+        }
+
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 260px;
+            background: white;
+            border-right: 1px solid var(--gray);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .app-header {
+            background: linear-gradient(180deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .app-header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .app-header h1 i {
+            font-size: 1.5rem;
+        }
+
+        .sidebar-header {
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--gray);
+            margin-bottom: 1rem;
+        }
+
+        .sidebar h3 {
+            color: var(--dark);
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .channel-option {
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .channel-option:hover {
+            background: #f1f5f9;
+        }
+
+        .channel-option.active {
+            background: #dbeafe;
+            color: var(--primary);
+            border-left: 3px solid var(--primary);
+        }
+
+        .channel-option i {
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Add query count badges */
+        .channel-badge {
+            margin-left: auto;
+            background: var(--secondary);
+            color: white;
+            border-radius: 10px;
+            padding: 2px 8px;
+            font-size: 0.75rem;
+            min-width: 20px;
+            text-align: center;
+        }
+
+        .channel-badge.whatsapp { background: var(--whatsapp-green); }
+        .channel-badge.email { background: var(--primary); }
+        .channel-badge.web-form { background: #6366f1; }
+
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        /* Dashboard stats */
+        .dashboard-header {
+            margin-bottom: 2rem;
+        }
+
+        .dashboard-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .stat-card h3 {
+            font-size: 0.875rem;
+            color: var(--secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card .value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .stat-card .trend {
+            font-size: 0.75rem;
+            margin-top: 0.25rem;
+        }
+
+        .trend.up { color: var(--success); }
+        .trend.down { color: var(--danger); }
+
+        /* Channel content */
+        .channel-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: none;
+        }
+
+        .channel-content.active {
+            display: block;
+        }
+
+        .content-header {
+            margin-bottom: 2rem;
+            background: white;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .content-header h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #fbbf24; /* Golden yellow for shiny effect */
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-shadow: 0 0 10px rgba(251, 191, 36, 0.3); /* Subtle glow */
+        }
+
+        .content-header h1 i {
+            font-size: 1.5rem;
+            color: #fbbf24; /* Golden yellow for icons */
+        }
+
+        .content-header p {
+            color: var(--secondary);
+            font-size: 1.1rem;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+            background: #0a192f; /* Navy blue background */
+            color: white; /* White text color for contrast */
+            transition: background-color 0.5s ease;
+        }
+
+        .main-content.whatsapp-bg {
+            background: #0a2d26; /* Darker green background for WhatsApp */
+        }
+
+        .main-content.email-bg {
+            background: #0c254d; /* Darker blue background for Email */
+        }
+
+        .main-content.webform-bg {
+            background: #2a144d; /* Darker purple background for Web Form */
+        }
+
+        .content-header h1,
+        .dashboard-title,
+        .stat-card h3,
+        .stat-card .value,
+        .form-group label {
+            color: white !important; /* White text for headers */
+        }
+
+        .content-header p {
+            color: #000000 !important; /* Black text for descriptive paragraphs */
+        }
+
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .form-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(15, 23, 42, 0.8); /* Dark background with some transparency */
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .form-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white; /* Keep form container white */
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .content-header {
+            margin-bottom: 2rem;
+        }
+
+        .content-header h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #fbbf24; /* Golden yellow for shiny effect */
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-shadow: 0 0 10px rgba(251, 191, 36, 0.3); /* Subtle glow */
+        }
+
+        .content-header h1 i {
+            font-size: 1.5rem;
+            color: #fbbf24; /* Golden yellow for icons */
+        }
+
+        .content-header p {
+            color: var(--secondary);
+            font-size: 1.1rem;
+        }
+
+        .form-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        #whatsapp-content .form-container {
+            background: #f0fdf4; /* Light green background for WhatsApp */
+            border: 1px solid #bbf7d0; /* Light green border */
+        }
+
+        #email-content .form-container {
+            background: #eff6ff; /* Light blue background for Email */
+            border: 1px solid #bfdbfe; /* Light blue border */
+        }
+
+        #web-form-content .form-container {
+            background: #f3e8ff; /* Light purple background for Web Form */
+            border: 1px solid #ddd6fe; /* Light purple border */
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #f1f5f9; /* Light color for dark background */
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: #0a192f; /* Navy blue background */
+            border: 1px solid #1e3a8a; /* Dark blue border */
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-family: inherit;
+            color: white; /* White text for user input */
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .form-group input::placeholder,
+        .form-group select::placeholder,
+        .form-group textarea::placeholder {
+            color: #94a3b8; /* Light gray placeholder text */
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #3b82f6; /* Light blue border when focused */
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+            background: #0f2a48; /* Slightly lighter navy when focused */
+        }
+
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        #whatsapp-content .btn {
+            background: linear-gradient(135deg, var(--whatsapp-green) 0%, var(--whatsapp-darker) 100%);
+        }
+
+        #email-content .btn {
+            background: linear-gradient(135deg, var(--email-blue) 0%, var(--email-darker) 100%);
+        }
+
+        #web-form-content .btn {
+            background: linear-gradient(135deg, var(--webform-purple) 0%, var(--webform-darker) 100%);
+        }
+
+        .whatsapp-btn {
+            background: linear-gradient(135deg, var(--whatsapp-green) 0%, var(--whatsapp-darker) 100%);
+        }
+
+        .email-btn {
+            background: linear-gradient(135deg, var(--email-blue) 0%, var(--email-darker) 100%);
+        }
+
+        .webform-btn {
+            background: linear-gradient(135deg, var(--webform-purple) 0%, var(--webform-darker) 100%);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        /* WhatsApp specific styles */
+        .whatsapp-container {
+            background: var(--whatsapp-bg);
+        }
+
+        .whatsapp-input input {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            background: #0a192f; /* Navy blue background */
+            border: 1px solid #1e3a8a; /* Dark blue border */
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            margin-right: 0.5rem;
+            color: white; /* White text for user input */
+        }
+
+        .whatsapp-input input::placeholder {
+            color: #94a3b8; /* Light gray placeholder text */
+        }
+
+        .whatsapp-input {
+            display: flex;
+            padding: 1rem;
+            background: #0a192f;
+            border-top: 1px solid #1e3a8a;
+        }
+
+        .whatsapp-send-btn {
+            background: var(--whatsapp-green);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .whatsapp-send-btn:hover {
+            background: var(--whatsapp-darker);
+        }
+
+        .chat-messages {
+            height: 300px;
+            overflow-y: auto;
+            padding: 1.5rem;
+            background: var(--whatsapp-bg);
+        }
+
+        .message {
+            margin-bottom: 1rem;
+            max-width: 70%;
+        }
+
+        .message.own {
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .message-bubble {
+            padding: 0.75rem 1rem;
+            border-radius: 0.75rem;
+            display: inline-block;
+            word-wrap: break-word;
+        }
+
+        .message.own .message-bubble {
+            background: var(--whatsapp-green);
+            color: white;
+            border-radius: 0.75rem 0.25rem 0.25rem 0.75rem;
+        }
+
+        .message.other .message-bubble {
+            background: rgba(255, 255, 255, 0.1);
+            color: #f1f5f9;
+            border-radius: 0.25rem 0.75rem 0.75rem 0.25rem;
+        }
+
+        .message-time {
+            font-size: 0.75rem;
+            color: var(--secondary);
+            margin-top: 0.25rem;
+            display: block;
+        }
+
+        .status {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin: 1rem 0;
+            display: none;
+        }
+
+        .status.success {
+            background: #0a192f; /* Navy blue background */
+            color: #6ee7b7; /* Light green text for contrast */
+            border: 1px solid #1e3a8a; /* Dark blue border */
+        }
+
+        .status.error {
+            background: #2d0a19; /* Dark red background */
+            color: #fca5a5; /* Light red text for contrast */
+            border: 1px solid #5b1a29; /* Darker red border */
+        }
+
+        .message-time {
+            font-size: 0.75rem;
+            color: #94a3b8; /* Light gray for dark mode */
+            margin-top: 0.25rem;
+            display: block;
+        }
+
+        .sidebar {
+            width: 260px;
+            background: #0f172a; /* Dark background */
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            color: #f1f5f9; /* Light text */
+        }
+
+        .sidebar-header {
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 1rem;
+        }
+
+        .sidebar h3 {
+            color: #f1f5f9; /* Light color */
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .channel-option {
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .channel-option:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .channel-option.active {
+            background: rgba(59, 130, 246, 0.2);
+            color: #93c5fd;
+            border-left: 3px solid #3b82f6;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .app-header {
+            background: linear-gradient(180deg, #1e293b, #0f172a);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        @media (max-width: 768px) {
+            .app-container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                border-right: none;
+                border-bottom: 1px solid var(--gray);
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- App Header -->
+        <div class="app-header">
+            <h1><i class="fas fa-headset"></i> Customer Success FTE</h1>
+            <div class="header-actions">
+                <span id="totalQueries">Total Queries: 0</span>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h3>Support Channels</h3>
+            </div>
+
+            <div class="channel-option active" data-channel="dashboard">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>Dashboard</span>
+            </div>
+            <div class="channel-option" data-channel="whatsapp">
+                <i class="fab fa-whatsapp"></i>
+                <span>WhatsApp</span>
+                <span class="channel-badge whatsapp" id="whatsapp-count">0</span>
+            </div>
+            <div class="channel-option" data-channel="email">
+                <i class="fas fa-envelope"></i>
+                <span>Email</span>
+                <span class="channel-badge email" id="email-count">0</span>
+            </div>
+            <div class="channel-option" data-channel="web-form">
+                <i class="fas fa-globe"></i>
+                <span>Web Form</span>
+                <span class="channel-badge web-form" id="web-form-count">0</span>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Dashboard -->
+            <div id="dashboard-content" class="channel-content active">
+                <div class="dashboard-header">
+                    <h1 class="dashboard-title">Customer Success Dashboard</h1>
+                </div>
+
+                <div class="stats-cards">
+                    <div class="stat-card">
+                        <h3>Total Conversations</h3>
+                        <div class="value" id="total-conversations">0</div>
+                        <div class="trend up">+12% from last week</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Response Rate</h3>
+                        <div class="value" id="response-rate">0%</div>
+                        <div class="trend up">+5% from last week</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Avg Response Time</h3>
+                        <div class="value" id="avg-response-time">0s</div>
+                        <div class="trend up">-30s from last week</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Escalations</h3>
+                        <div class="value" id="escalations">0</div>
+                        <div class="trend down">-2 from last week</div>
+                    </div>
+                </div>
+
+                <div class="form-container">
+                    <h2 style="margin-bottom: 1.5rem; color: var(--dark);">Quick Channel Access</h2>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
+                        <button class="btn whatsapp-btn" onclick="switchChannel('whatsapp')">
+                            <i class="fab fa-whatsapp"></i> WhatsApp
+                        </button>
+                        <button class="btn email-btn" onclick="switchChannel('email')">
+                            <i class="fas fa-envelope"></i> Email
+                        </button>
+                        <button class="btn webform-btn" onclick="switchChannel('web-form')">
+                            <i class="fas fa-globe"></i> Web Form
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- WhatsApp Channel -->
+            <div id="whatsapp-content" class="channel-content">
+                <div class="content-header">
+                    <h1><i class="fab fa-whatsapp" style="color: var(--whatsapp-green);"></i> WhatsApp Support</h1>
+                    <p>Chat with us instantly on WhatsApp for quick support</p>
+                </div>
+
+                <div class="form-container">
+                    <div class="section-header">
+                        <i class="fas fa-comments"></i>
+                        <h2>Chat with Support</h2>
+                    </div>
+
+                    <div class="chat-container">
+                        <div class="chat-messages" id="whatsappChatMessages">
+                            <div class="message other">
+                                <div class="message-bubble">
+                                    Hello! 👋 Welcome to TechCorp Support. How can I help you today?
+                                </div>
+                                <div class="message-time">Just now</div>
+                            </div>
+                        </div>
+                        <div class="whatsapp-input">
+                            <input type="text" id="whatsappChatInput" placeholder="Type a message...">
+                            <button id="whatsappSendChatBtn" class="whatsapp-send-btn">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 2rem;">
+                        <div class="section-header">
+                            <i class="fas fa-paper-plane"></i>
+                            <h2>Send WhatsApp Message</h2>
+                        </div>
+
+                        <form id="whatsappForm">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="toPhone">Phone Number (WhatsApp format) *</label>
+                                    <input type="text" id="toPhone" name="to" required placeholder="whatsapp:+1234567890">
+                                </div>
+                                <div class="form-group">
+                                    <label for="whatsappPriority">Priority</label>
+                                    <select id="whatsappPriority" name="priority">
+                                        <option value="normal">Normal</option>
+                                        <option value="high">High</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="whatsappMessage">Message *</label>
+                                <textarea id="whatsappMessage" name="body" required placeholder="Type your WhatsApp message here..."></textarea>
+                            </div>
+
+                            <div id="whatsappResult" class="status"></div>
+
+                            <button type="submit" class="btn">
+                                <i class="fab fa-whatsapp"></i>
+                                Send WhatsApp Message
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Email Channel -->
+            <div id="email-content" class="channel-content">
+                <div class="content-header">
+                    <h1><i class="fas fa-envelope"></i> Email Support</h1>
+                    <p>Send us an email for detailed support inquiries</p>
+                </div>
+
+                <div class="form-container">
+                    <form id="emailForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="emailName">Your Name *</label>
+                                <input type="text" id="emailName" name="name" required placeholder="Enter your full name">
+                            </div>
+                            <div class="form-group">
+                                <label for="toEmail">Email Address *</label>
+                                <input type="email" id="toEmail" name="to" class="form-control" required placeholder="recipient@example.com" value="support@techcorp.com">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="emailSubject">Subject *</label>
+                            <input type="text" id="emailSubject" name="subject" class="form-control" required placeholder="Your subject here">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="emailBody">Message *</label>
+                            <textarea id="emailBody" name="body" class="form-control" required placeholder="Type your message here..."></textarea>
+                        </div>
+
+                        <div id="emailResult" class="status"></div>
+
+                        <div style="display: flex; gap: 1rem;">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane"></i> Send Email
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Web Form Channel -->
+            <div id="web-form-content" class="channel-content">
+                <div class="content-header">
+                    <h1><i class="fas fa-headset"></i> Web Support Form</h1>
+                    <p>Fill out the form below to submit your support request</p>
+                </div>
+
+                <div class="form-container">
+                    <form id="supportForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="fullName">Full Name *</label>
+                                <input type="text" id="fullName" name="name" required placeholder="Enter your full name">
+                            </div>
+                            <div class="form-group">
+                                <label for="userEmail">Email Address *</label>
+                                <input type="email" id="userEmail" name="email" required placeholder="Enter your email">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="formSubject">Subject *</label>
+                                <input type="text" id="formSubject" name="subject" required placeholder="Brief description">
+                            </div>
+                            <div class="form-group">
+                                <label for="category">Category *</label>
+                                <select id="category" name="category" required>
+                                    <option value="">Select a category</option>
+                                    <option value="general">General Question</option>
+                                    <option value="technical">Technical Support</option>
+                                    <option value="billing">Billing Inquiry</option>
+                                    <option value="bug_report">Bug Report</option>
+                                    <option value="feature_request">Feature Request</option>
+                                    <option value="feedback">Feedback</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="formPriority">Priority</label>
+                                <select id="formPriority" name="priority">
+                                    <option value="low">Low - Not urgent</option>
+                                    <option value="medium" selected>Medium - Need help soon</option>
+                                    <option value="high">High - Urgent issue</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="contactMethod">Preferred Contact Method</label>
+                                <select id="contactMethod" name="contact_method">
+                                    <option value="email">Email</option>
+                                    <option value="phone">Phone</option>
+                                    <option value="any">Any</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="howCanWeHelp">How can we help you? *</label>
+                            <textarea id="howCanWeHelp" name="message" required placeholder="Please describe your issue or question in detail..."></textarea>
+                        </div>
+
+                        <div id="formResult" class="status"></div>
+
+                        <div style="text-align: center;">
+                            <button type="submit" class="btn">
+                                <i class="fas fa-paper-plane"></i>
+                                Submit Support Request
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script>
+        // Initialize query counts from localStorage or set to 0
+        let queryCounts = {
+            whatsapp: parseInt(localStorage.getItem('whatsappCount') || '0'),
+            email: parseInt(localStorage.getItem('emailCount') || '0'),
+            web_form: parseInt(localStorage.getItem('webformCount') || '0')
+        };
+
+        // Update the UI with the current counts
+        updateCounts();
+
+        // Function to update the UI with query counts
+        function updateCounts() {
+            document.getElementById('whatsapp-count').textContent = queryCounts.whatsapp;
+            document.getElementById('email-count').textContent = queryCounts.email;
+            document.getElementById('web-form-count').textContent = queryCounts.web_form;
+
+            const total = queryCounts.whatsapp + queryCounts.email + queryCounts.web_form;
+            document.getElementById('totalQueries').textContent = `Total Queries: ${total}`;
+
+            // Update dashboard stats
+            document.getElementById('total-conversations').textContent = total;
+            document.getElementById('response-rate').textContent = total > 0 ? '89%' : '0%';
+            document.getElementById('avg-response-time').textContent = total > 0 ? '2m 30s' : '0s';
+            document.getElementById('escalations').textContent = Math.floor(total / 10);
+        }
+
+        // Function to increment query count for a specific channel
+        function incrementCount(channel) {
+            if (channel === 'whatsapp') {
+                queryCounts.whatsapp++;
+                localStorage.setItem('whatsappCount', queryCounts.whatsapp.toString());
+            } else if (channel === 'email') {
+                queryCounts.email++;
+                localStorage.setItem('emailCount', queryCounts.email.toString());
+            } else if (channel === 'web_form') {
+                queryCounts.web_form++;
+                localStorage.setItem('webformCount', queryCounts.web_form.toString());
+            }
+            updateCounts();
+        }
+
+        // Function to generate QR code for ticket
+        function generateQRCode(ticketId, message) {
+            // Create or clear QR container
+            const qrContainer = document.getElementById('qr-container') || document.createElement('div');
+            qrContainer.id = 'qr-container';
+            qrContainer.style.marginTop = '1rem';
+            qrContainer.style.textAlign = 'center';
+            qrContainer.style.display = 'block';
+
+            // Clear previous QR code
+            qrContainer.innerHTML = '';
+
+            // Add QR code title
+            const qrTitle = document.createElement('div');
+            qrTitle.innerHTML = '<h4 style="color: white; margin-bottom: 0.5rem;">QR Code for Ticket</h4>';
+            qrContainer.appendChild(qrTitle);
+
+            // Create QR code DIV
+            const qrDiv = document.createElement('div');
+            qrDiv.id = 'qrcode';
+            qrContainer.appendChild(qrDiv);
+
+            // Create ticket text
+            const ticketText = document.createElement('div');
+            ticketText.innerHTML = `<p style="color: #6ee7b7; margin-top: 0.5rem;">Ticket ID: ${ticketId}</p>`;
+            qrContainer.appendChild(ticketText);
+
+            // Generate QR code
+            new QRCode(qrDiv, {
+                text: `Ticket ID: ${ticketId}\\nMessage: ${message}\\nSubmitted at: ${new Date().toLocaleString()}`,
+                width: 128,
+                height: 128,
+                colorDark: "#ffffff",
+                colorLight: "#0a192f",
+                correctLevel: QRCode.CorrectLevel.H
+            });
+
+            return qrContainer;
+        }
+
+        // Channel switching functionality
+        function switchChannel(channel) {
+            // Remove all background classes from main content
+            const mainContent = document.querySelector('.main-content');
+            mainContent.classList.remove('whatsapp-bg', 'email-bg', 'webform-bg');
+
+            // Add appropriate background class based on channel
+            if (channel === 'whatsapp') {
+                mainContent.classList.add('whatsapp-bg');
+            } else if (channel === 'email') {
+                mainContent.classList.add('email-bg');
+            } else if (channel === 'web-form') {
+                mainContent.classList.add('webform-bg');
+            } else if (channel === 'dashboard') {
+                mainContent.classList.remove('whatsapp-bg', 'email-bg', 'webform-bg'); // Reset to default
+            }
+
+            // Update active channel option
+            document.querySelectorAll('.channel-option').forEach(opt => {
+                opt.classList.remove('active');
+            });
+            document.querySelector(`[data-channel="${channel}"]`).classList.add('active');
+
+            // Show the corresponding content
+            document.querySelectorAll('.channel-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(`${channel}-content`).classList.add('active');
+        }
+
+        document.querySelectorAll('.channel-option').forEach(option => {
+            option.addEventListener('click', function() {
+                const channel = this.getAttribute('data-channel');
+                switchChannel(channel);
+            });
+        });
+
+        // WhatsApp Chat functionality
+        document.getElementById('whatsappChatInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                document.getElementById('whatsappSendChatBtn').click();
+            }
+        });
+
+        document.getElementById('whatsappSendChatBtn').addEventListener('click', function() {
+            const input = document.getElementById('whatsappChatInput');
+            const message = input.value.trim();
+            if (message) {
+                const chatMessages = document.getElementById('whatsappChatMessages');
+                const newMessage = document.createElement('div');
+                newMessage.className = 'message own';
+                newMessage.innerHTML = `
+                    <div class="message-bubble">
+                        ${message}
+                    </div>
+                    <div class="message-time">Just now</div>
+                `;
+                chatMessages.appendChild(newMessage);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                input.value = '';
+            }
+        });
+
+        // WhatsApp Form submission
+        document.getElementById('whatsappForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const formData = {
+                to: document.getElementById('toPhone').value,
+                body: document.getElementById('whatsappMessage').value,
+                priority: document.getElementById('whatsappPriority').value,
+                channel: 'whatsapp'
+            };
+
+            const result = document.getElementById('whatsappResult');
+            const submitBtn = document.querySelector('.btn[type="submit"]');
+
+            // Show loading state
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+
+            try {
+                const response = await fetch('/api/whatsapp/send', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    result.className = 'status success';
+                    let resultHTML = `
+                        <i class="fas fa-check-circle"></i>
+                        <strong>Success!</strong> Your WhatsApp message has been sent successfully.
+                        <br>Message ID: ${data.channel_message_id}
+                        <br>Delivery Status: ${data.delivery_status}
+                    `;
+
+                    // Generate QR code for WhatsApp message
+                    const qrContainer = generateQRCode(data.channel_message_id, formData.body);
+                    result.innerHTML = resultHTML;
+                    result.appendChild(qrContainer);
+
+                    result.style.display = 'block';
+                    document.getElementById('whatsappForm').reset();
+
+                    // Add message to chat
+                    const chatMessages = document.getElementById('whatsappChatMessages');
+                    const newMessage = document.createElement('div');
+                    newMessage.className = 'message own';
+                    newMessage.innerHTML = `
+                        <div class="message-bubble">
+                            ${formData.body}
+                        </div>
+                        <div class="message-time">Just now</div>
+                    `;
+                    chatMessages.appendChild(newMessage);
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+
+                    // Increment WhatsApp count
+                    incrementCount('whatsapp');
+                } else {
+                    const error = await response.json();
+                    result.className = 'status error';
+                    result.innerHTML = `
+                        <i class="fas fa-exclamation-circle"></i>
+                        <strong>Error:</strong> ${error.detail || 'Failed to send message'}
+                    `;
+                    result.style.display = 'block';
+                }
+            } catch (error) {
+                result.className = 'status error';
+                result.innerHTML = `
+                    <i class="fas fa-exclamation-circle"></i>
+                    <strong>Error:</strong> Could not send WhatsApp message. Please try again.
+                `;
+                result.style.display = 'block';
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fab fa-whatsapp"></i> Send WhatsApp Message';
+            }
+        });
+
+        // Email Form submission
+        document.getElementById('emailForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const formData = {
+                name: document.getElementById('emailName').value,
+                to: document.getElementById('toEmail').value,
+                from: document.getElementById('toEmail').value,
+                subject: document.getElementById('emailSubject').value,
+                body: document.getElementById('emailBody').value,
+                channel: 'email'
+            };
+
+            const result = document.getElementById('emailResult');
+            const submitBtn = document.querySelector('#emailForm .btn');
+
+            // Show loading state
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+
+            try {
+                const response = await fetch('/api/email/send', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    result.className = 'status success';
+                    let resultHTML = `
+                        <i class="fas fa-check-circle"></i>
+                        <strong>Success!</strong> Your email has been sent successfully.
+                        <br>Message ID: ${data.channel_message_id}
+                        <br>Subject: ${formData.subject}
+                    `;
+
+                    // Generate QR code for email
+                    const qrContainer = generateQRCode(data.channel_message_id, formData.subject);
+                    result.innerHTML = resultHTML;
+                    result.appendChild(qrContainer);
+
+                    result.style.display = 'block';
+                    document.getElementById('emailForm').reset();
+
+                    // Increment email count
+                    incrementCount('email');
+                } else {
+                    const error = await response.json();
+                    result.className = 'status error';
+                    result.innerHTML = `
+                        <i class="fas fa-exclamation-circle"></i>
+                        <strong>Error:</strong> ${error.detail || 'Failed to send email'}
+                    `;
+                    result.style.display = 'block';
+                }
+            } catch (error) {
+                result.className = 'status error';
+                result.innerHTML = `
+                    <i class="fas fa-exclamation-circle"></i>
+                    <strong>Error:</strong> Could not send email. Please try again.
+                `;
+                result.style.display = 'block';
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Email';
+            }
+        });
+
+        // Web Form submission
+        document.getElementById('supportForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const formData = {
+                name: document.getElementById('fullName').value,
+                email: document.getElementById('userEmail').value,
+                subject: document.getElementById('formSubject').value,
+                category: document.getElementById('category').value,
+                priority: document.getElementById('formPriority').value,
+                message: document.getElementById('howCanWeHelp').value,
+                contact_method: document.getElementById('contactMethod').value,
+                channel: 'web_form'
+            };
+
+            const result = document.getElementById('formResult');
+            const submitBtn = document.querySelector('#supportForm .btn');
+
+            // Show loading state
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+
+            try {
+                const response = await fetch('/api/web-form/submit', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    result.className = 'status success';
+                    let resultHTML = `
+                        <i class="fas fa-check-circle"></i>
+                        <strong>Success!</strong> Your ticket has been created successfully.
+                        <br>Ticket ID: ${data.ticket_id}
+                        <br>Our support team will respond within 2-4 hours.
+                    `;
+
+                    // Generate QR code for web form submission
+                    const qrContainer = generateQRCode(data.ticket_id, formData.message);
+                    result.innerHTML = resultHTML;
+                    result.appendChild(qrContainer);
+
+                    result.style.display = 'block';
+                    document.getElementById('supportForm').reset();
+
+                    // Increment web form count
+                    incrementCount('web_form');
+                } else {
+                    const error = await response.json();
+                    result.className = 'status error';
+                    result.innerHTML = `
+                        <i class="fas fa-exclamation-circle"></i>
+                        <strong>Error:</strong> ${error.detail || 'Failed to submit form'}
+                    `;
+                    result.style.display = 'block';
+                }
+            } catch (error) {
+                result.className = 'status error';
+                result.innerHTML = `
+                    <i class="fas fa-exclamation-circle"></i>
+                    <strong>Error:</strong> Could not submit form. Please try again.
+                `;
+                result.style.display = 'block';
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Support Request';
+            }
+        });
+    </script>
+</body>
+</html>

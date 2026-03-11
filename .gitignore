@@ -1,0 +1,32 @@
+# Environment variables
+.env
+
+# Token files
+token.pickle
+*.pickle
+
+# Credentials
+credentials.json
+
+# Logs
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# IDE specific files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Local environment
+venv/
+env/
+.env

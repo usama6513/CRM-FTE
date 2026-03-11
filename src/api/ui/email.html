@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Success FTE - Email Support</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #64748b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --light: #f8fafc;
+            --dark: #0f172a;
+            --gray: #e2e8f0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f1f5f9;
+            color: var(--dark);
+            line-height: 1.6;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: linear-gradient(180deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .header h1 i {
+            font-size: 1.5rem;
+        }
+
+        .main-content {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: 260px;
+            background: white;
+            border-right: 1px solid var(--gray);
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            padding: 1rem;
+            border-bottom: 1px solid var(--gray);
+            background: var(--light);
+        }
+
+        .compose-btn {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            margin-bottom: 1rem;
+        }
+
+        .compose-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .email-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .email-item {
+            padding: 1rem;
+            border-bottom: 1px solid var(--gray);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .email-item:hover {
+            background: var(--light);
+        }
+
+        .email-item.active {
+            background: #dbeafe;
+            border-left: 3px solid var(--primary);
+        }
+
+        .email-sender {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .email-subject {
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .email-preview {
+            color: var(--secondary);
+            font-size: 0.875rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .email-time {
+            font-size: 0.75rem;
+            color: var(--secondary);
+            text-align: right;
+        }
+
+        .email-view {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: white;
+            overflow: hidden;
+        }
+
+        .email-header-view {
+            padding: 1rem 2rem;
+            border-bottom: 1px solid var(--gray);
+            background: var(--light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .email-subject-view {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .email-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .email-actions button {
+            padding: 0.5rem;
+            background: var(--gray);
+            border: none;
+            border-radius: 0.25rem;
+            cursor: pointer;
+        }
+
+        .email-content-view {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+            background: white;
+        }
+
+        .email-body {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .reply-section {
+            padding: 2rem;
+            border-top: 1px solid var(--gray);
+            background: var(--light);
+        }
+
+        .reply-form {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--gray);
+            border-radius: 0.5rem;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        textarea.form-control {
+            min-height: 200px;
+            resize: vertical;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--gray);
+            color: var(--dark);
+        }
+
+        .btn-outline:hover {
+            background: var(--light);
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: 40vh;
+            }
+
+            .email-view {
+                height: 60vh;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1><i class="fas fa-envelope"></i> Email Support</h1>
+        <div class="header-actions">
+            <button class="compose-btn" id="composeBtn">
+                <i class="fas fa-pen"></i> Compose
+            </button>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h3>Support Inbox</h3>
+            </div>
+            <button class="compose-btn" id="composeBtn2">
+                <i class="fas fa-pen"></i> Compose New Email
+            </button>
+            <div class="email-list" id="emailList">
+                <div class="email-item active">
+                    <div class="email-sender">
+                        <span class="email-sender-name">TechCorp Support</span>
+                        <span class="email-time">10:30 AM</span>
+                    </div>
+                    <div class="email-subject">Welcome to TechCorp!</div>
+                    <div class="email-preview">Thank you for signing up with our service...</div>
+                </div>
+                <div class="email-item">
+                    <div class="email-sender">
+                        <span class="email-sender-name">Billing Team</span>
+                        <span class="email-time">Yesterday</span>
+                    </div>
+                    <div class="email-subject">Invoice #2023-001</div>
+                    <div class="email-preview">Your monthly invoice is now available...</div>
+                </div>
+                <div class="email-item">
+                    <div class="email-sender">
+                        <span class="email-sender-name">Account Services</span>
+                        <span class="email-time">Mar 5</span>
+                    </div>
+                    <div class="email-subject">Account Verification Required</div>
+                    <div class="email-preview">Please verify your account to continue...</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="email-view">
+            <div class="email-header-view">
+                <div class="email-subject-view">Welcome to TechCorp!</div>
+                <div class="email-actions">
+                    <button title="Reply"><i class="fas fa-reply"></i></button>
+                    <button title="Reply All"><i class="fas fa-reply-all"></i></button>
+                    <button title="Forward"><i class="fas fa-share"></i></button>
+                    <button title="Delete"><i class="fas fa-trash"></i></button>
+                </div>
+            </div>
+
+            <div class="email-content-view" id="emailContentView">
+                <div class="email-body">
+                    <h3>Welcome to TechCorp!</h3>
+                    <p>Dear User,</p>
+                    <p>Thank you for signing up with TechCorp. We're excited to have you on board!</p>
+                    <p>Here are some quick tips to get you started:</p>
+                    <ul>
+                        <li>Complete your profile setup</li>
+                        <li>Explore our documentation</li>
+                        <li>Join our community forums</li>
+                    </ul>
+                    <p>If you have any questions, feel free to reach out to our support team.</p>
+                    <p>Best regards,<br>The TechCorp Team</p>
+                </div>
+            </div>
+
+            <div class="reply-section">
+                <div class="reply-form">
+                    <form id="emailForm">
+                        <div class="form-group">
+                            <label for="name">Your Name *</label>
+                            <input type="text" id="name" name="name" class="form-control" required placeholder="Enter your full name">
+                        </div>
+                        <div class="form-group">
+                            <label for="toEmail">Email Address *</label>
+                            <input type="email" id="toEmail" name="to" class="form-control" required placeholder="recipient@example.com" value="support@techcorp.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="subject">Subject *</label>
+                            <input type="text" id="subject" name="subject" class="form-control" required placeholder="Your subject here">
+                        </div>
+                        <div class="form-group">
+                            <label for="emailBody">Message *</label>
+                            <textarea id="emailBody" name="body" class="form-control" required placeholder="Type your message here..."></textarea>
+                        </div>
+                        <div id="emailResult" class="status"></div>
+                        <div style="display: flex; gap: 1rem;">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane"></i> Send
+                            </button>
+                            <button type="button" class="btn btn-outline">
+                                <i class="fas fa-save"></i> Save Draft
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('emailForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const formData = {
+                name: document.getElementById('name').value,
+                to: document.getElementById('toEmail').value,
+                from: document.getElementById('toEmail').value, // Using toEmail as from for this form
+                subject: document.getElementById('subject').value,
+                body: document.getElementById('emailBody').value,
+                priority: document.getElementById('priority') ? document.getElementById('priority').value : 'medium',
+                category: document.getElementById('category') ? document.getElementById('category').value : 'general',
+                channel: 'email'
+            };
+
+            const result = document.getElementById('emailResult');
+            const submitBtn = document.querySelector('.btn[type="submit"]');
+
+            // Show loading state
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+
+            try {
+                const response = await fetch('/api/email/send', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    result.className = 'status success';
+                    result.innerHTML = `
+                        <i class="fas fa-check-circle"></i>
+                        <strong>Success!</strong> Your email has been sent successfully.
+                        <br>Message ID: ${data.channel_message_id}
+                        <br>Subject: ${formData.subject}
+                    `;
+                    result.style.display = 'block';
+                    document.getElementById('emailForm').reset();
+                } else {
+                    const error = await response.json();
+                    result.className = 'status error';
+                    result.innerHTML = `
+                        <i class="fas fa-exclamation-circle"></i>
+                        <strong>Error:</strong> ${error.detail || 'Failed to send email'}
+                    `;
+                    result.style.display = 'block';
+                }
+            } catch (error) {
+                result.className = 'status error';
+                result.innerHTML = `
+                    <i class="fas fa-exclamation-circle"></i>
+                    <strong>Error:</strong> Could not send email. Please try again.
+                `;
+                result.style.display = 'block';
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Email';
+            }
+        });
+    </script>
+</body>
+</html>

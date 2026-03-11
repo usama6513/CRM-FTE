@@ -1,0 +1,279 @@
+{
+  "sample_tickets": [
+    {
+      "id": 1,
+      "channel": "email",
+      "customer_name": "Sarah Johnson",
+      "customer_email": "sarah@acmecompany.com",
+      "subject": "How to import contacts?",
+      "message": "Hi, I need to import a large number of contacts from our old system. Can you provide instructions on how to do this?",
+      "category": "technical",
+      "priority": "medium",
+      "timestamp": "2024-03-01T10:30:00Z"
+    },
+    {
+      "id": 2,
+      "channel": "whatsapp",
+      "customer_name": "",
+      "customer_phone": "+1234567890",
+      "subject": "API Integration",
+      "message": "Hello, need help integrating your API with our system. Is there documentation available?",
+      "category": "technical",
+      "priority": "high",
+      "timestamp": "2024-03-01T11:15:00Z"
+    },
+    {
+      "id": 3,
+      "channel": "web_form",
+      "customer_name": "Michael Chen",
+      "customer_email": "michael@techstartups.com",
+      "subject": "Pricing Inquiry",
+      "message": "I'm interested in your CRM Pro solution and would like to know more about your pricing plans for 25 users.",
+      "category": "billing",
+      "priority": "medium",
+      "timestamp": "2024-03-01T12:45:00Z"
+    },
+    {
+      "id": 4,
+      "channel": "email",
+      "customer_name": "Emma Rodriguez",
+      "customer_email": "emma@retailcorp.com",
+      "subject": "Email template customization",
+      "message": "I want to create custom email templates that match our brand colors and add our logo. How can I do this?",
+      "category": "technical",
+      "priority": "low",
+      "timestamp": "2024-03-01T14:22:00Z"
+    },
+    {
+      "id": 5,
+      "channel": "whatsapp",
+      "customer_name": "",
+      "customer_phone": "+987654321",
+      "subject": "Login issue",
+      "message": "Can't login to my CRM account. Password reset didn't work. Please help urgently, I need access for today's client meetings.",
+      "category": "technical",
+      "priority": "high",
+      "timestamp": "2024-03-01T15:05:00Z"
+    },
+    {
+      "id": 6,
+      "channel": "web_form",
+      "customer_name": "David Kim",
+      "customer_email": "david@financegroup.com",
+      "subject": "Report generation",
+      "message": "We need to generate monthly sales reports with specific filters and data points that match our internal KPIs. Can your system support custom report fields?",
+      "category": "technical",
+      "priority": "medium",
+      "timestamp": "2024-03-01T16:30:00Z"
+    },
+    {
+      "id": 7,
+      "channel": "email",
+      "customer_name": "Lisa Anderson",
+      "customer_email": "support@healthcareinc.com",
+      "subject": "Integration with Outlook",
+      "message": "We're having issues with the Outlook integration. Emails are not syncing properly and calendar events are not being tracked. What can we do?",
+      "category": "technical",
+      "priority": "medium",
+      "timestamp": "2024-03-02T09:15:00Z"
+    },
+    {
+      "id": 8,
+      "channel": "whatsapp",
+      "customer_name": "",
+      "customer_phone": "+5555555555",
+      "subject": "Account Upgrade",
+      "message": "How can I upgrade my account from the Basic plan to the Pro plan? We need more user licenses.",
+      "category": "billing",
+      "priority": "medium",
+      "timestamp": "2024-03-02T10:45:00Z"
+    },
+    {
+      "id": 9,
+      "channel": "web_form",
+      "customer_name": "James Wilson",
+      "customer_email": "james@manufacturingco.com",
+      "subject": "Security Compliance",
+      "message": "Does your CRM system comply with GDPR and SOC 2 requirements? We need to verify before implementing at our organization.",
+      "category": "technical",
+      "priority": "high",
+      "timestamp": "2024-03-02T11:30:00Z"
+    },
+    {
+      "id": 10,
+      "channel": "email",
+      "customer_name": "Olivia Parker",
+      "customer_email": "olivia@agency.com",
+      "subject": "Bulk email campaigns",
+      "message": "I'm trying to send a promotional email to 5000 contacts but it's not working. The system says the limit is exceeded. Is there a workaround?",
+      "category": "technical",
+      "priority": "medium",
+      "timestamp": "2024-03-02T13:20:00Z"
+    },
+    {
+      "id": 11,
+      "channel": "whatsapp",
+      "customer_name": "",
+      "customer_phone": "+1112223333",
+      "subject": "Sales pipeline",
+      "message": "I need help setting up custom sales stages in the pipeline. Our process is different from the default stages.",
+      "category": "technical",
+      "priority": "low",
+      "timestamp": "2024-03-02T14:10:00Z"
+    },
+    {
+      "id": 12,
+      "channel": "web_form",
+      "customer_name": "Robert Taylor",
+      "customer_email": "robert@consultingfirm.com",
+      "subject": "Training Resources",
+      "message": "Do you have any training resources or onboarding materials for new users? We just added 10 new team members.",
+      "category": "general",
+      "priority": "medium",
+      "timestamp": "2024-03-02T15:45:00Z"
+    },
+    {
+      "id": 13,
+      "channel": "email",
+      "customer_name": "Sophia Martinez",
+      "customer_email": "sophia@education.org",
+      "subject": "Data export",
+      "message": "I need to export all customer data for our quarterly review. How do I export data in a format compatible with Excel?",
+      "category": "technical",
+      "priority": "medium",
+      "timestamp": "2024-03-03T09:30:00Z"
+    },
+    {
+      "id": 14,
+      "channel": "whatsapp",
+      "customer_name": "",
+      "customer_phone": "+4445556666",
+      "subject": "Lost access",
+      "message": "I lost my phone and can't access my account because of 2FA. How can I reset it?",
+      "category": "technical",
+      "priority": "high",
+      "timestamp": "2024-03-03T10:15:00Z"
+    },
+    {
+      "id": 15,
+      "channel": "web_form",
+      "customer_name": "Thomas Lee",
+      "customer_email": "thomas@financialplanners.com",
+      "subject": "Mobile app",
+      "message": "When will you release the mobile app for iOS? Our sales team needs to access the CRM while on the road.",
+      "category": "general",
+      "priority": "low",
+      "timestamp": "2024-03-03T11:00:00Z"
+    },
+    {
+      "id": 16,
+      "channel": "email",
+      "customer_name": "Amanda Foster",
+      "customer_email": "amanda@nonprofit.org",
+      "subject": "Non-profit discount",
+      "message": "Do you offer any discounts for non-profit organizations? We're a registered 501(c)(3) organization.",
+      "category": "billing",
+      "priority": "medium",
+      "timestamp": "2024-03-03T12:15:00Z"
+    },
+    {
+      "id": 17,
+      "channel": "whatsapp",
+      "customer_name": "",
+      "customer_phone": "+7778889999",
+      "subject": "Wrong charges",
+      "message": "I was charged for 20 users but I only have 15. Can you fix this billing error?",
+      "category": "billing",
+      "priority": "high",
+      "timestamp": "2024-03-03T13:30:00Z"
+    },
+    {
+      "id": 18,
+      "channel": "web_form",
+      "customer_name": "Christopher King",
+      "customer_email": "chris@ecommerce.com",
+      "subject": "E-commerce integration",
+      "message": "Does your platform integrate with Shopify? We want to sync customer data between both systems.",
+      "category": "technical",
+      "priority": "medium",
+      "timestamp": "2024-03-03T14:45:00Z"
+    },
+    {
+      "id": 19,
+      "channel": "email",
+      "customer_name": "Jennifer Wright",
+      "customer_email": "jenn@startup.com",
+      "subject": "Custom fields",
+      "message": "I want to create custom fields for our specific industry requirements. How many custom fields can we create per contact?",
+      "category": "technical",
+      "priority": "medium",
+      "timestamp": "2024-03-03T15:20:00Z"
+    },
+    {
+      "id": 20,
+      "channel": "whatsapp",
+      "customer_name": "",
+      "customer_phone": "+2223334444",
+      "subject": "Refund request",
+      "message": "I want to cancel my subscription and get a refund. I'm not satisfied with the service.",
+      "category": "billing",
+      "priority": "high",
+      "timestamp": "2024-03-04T09:00:00Z"
+    },
+    {
+      "id": 21,
+      "channel": "web_form",
+      "customer_name": "Nicholas Scott",
+      "customer_email": "nicholas@services.com",
+      "subject": "API rate limits",
+      "message": "I'm hitting API rate limits during data sync. Is there a way to increase the limit for our account?",
+      "category": "technical",
+      "priority": "medium",
+      "timestamp": "2024-03-04T10:15:00Z"
+    },
+    {
+      "id": 22,
+      "channel": "email",
+      "customer_name": "Rebecca Hall",
+      "customer_email": "rebecca@marketingag.com",
+      "subject": "Automation workflows",
+      "message": "How can I set up automation for follow-up emails when prospects don't respond to initial outreach?",
+      "category": "technical",
+      "priority": "medium",
+      "timestamp": "2024-03-04T11:30:00Z"
+    },
+    {
+      "id": 23,
+      "channel": "whatsapp",
+      "customer_name": "",
+      "customer_phone": "+6667778888",
+      "subject": "Account suspension",
+      "message": "My account is suspended. What happened and how do I get it reactivated?",
+      "category": "technical",
+      "priority": "high",
+      "timestamp": "2024-03-04T12:45:00Z"
+    },
+    {
+      "id": 24,
+      "channel": "web_form",
+      "customer_name": "Daniel Young",
+      "customer_email": "daniel@agencygroup.com",
+      "subject": "SSO Setup",
+      "message": "We want to implement Single Sign-On (SSO) for our team. Do you support SAML 2.0?",
+      "category": "technical",
+      "priority": "medium",
+      "timestamp": "2024-03-04T14:00:00Z"
+    },
+    {
+      "id": 25,
+      "channel": "email",
+      "customer_name": "Rachel Green",
+      "customer_email": "rachel@mediacorp.com",
+      "subject": "Custom dashboard",
+      "message": "Can I create a custom dashboard that shows specific metrics that matter to my marketing team?",
+      "category": "technical",
+      "priority": "low",
+      "timestamp": "2024-03-04T15:30:00Z"
+    }
+  ]
+}

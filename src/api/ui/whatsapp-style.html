@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Success FTE - WhatsApp Style</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --whatsapp-green: #10b981;
+            --whatsapp-dark: #059669;
+            --whatsapp-darker: #047857;
+            --whatsapp-light: #f0fdf4;
+            --whatsapp-bubble: #ffffff;
+            --whatsapp-text: #374151;
+            --whatsapp-header: #ffffff;
+            --whatsapp-sidebar: #ffffff;
+            --whatsapp-chat-bg: #e5e7eb;
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #64748b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --light: #f8fafc;
+            --dark: #0f172a;
+            --gray: #e2e8f0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f1f5f9;
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: 30%;
+            background: var(--whatsapp-sidebar);
+            border-right: 1px solid var(--gray);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .sidebar-header {
+            background: linear-gradient(135deg, var(--whatsapp-green) 0%, var(--whatsapp-dark) 100%);
+            color: white;
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--whatsapp-dark);
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .user-details {
+            flex: 1;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: white;
+        }
+
+        .user-status {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .header-icons {
+            display: flex;
+            gap: 16px;
+            color: white;
+        }
+
+        .header-icons i {
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: opacity 0.2s;
+        }
+
+        .header-icons i:hover {
+            opacity: 0.8;
+        }
+
+        .search-container {
+            padding: 1rem;
+            background: var(--whatsapp-header);
+            border-bottom: 1px solid var(--gray);
+        }
+
+        .search-box {
+            background: white;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-box i {
+            color: var(--secondary);
+        }
+
+        .search-box input {
+            border: none;
+            outline: none;
+            flex: 1;
+            font-size: 14px;
+            background: transparent;
+        }
+
+        .chat-list {
+            flex: 1;
+            overflow-y: auto;
+            background: var(--whatsapp-header);
+        }
+
+        .chat-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 1rem;
+            cursor: pointer;
+            border-bottom: 1px solid var(--gray);
+            transition: background 0.2s;
+        }
+
+        .chat-item:hover {
+            background: #f1f5f9;
+        }
+
+        .chat-item.active {
+            background: #dbeafe;
+        }
+
+        .chat-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--whatsapp-green) 0%, var(--whatsapp-dark) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .chat-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .chat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+
+        .chat-name {
+            font-weight: 600;
+            color: var(--dark);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .chat-time {
+            font-size: 12px;
+            color: var(--secondary);
+        }
+
+        .chat-preview {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 14px;
+            color: var(--secondary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .chat-preview i {
+            font-size: 12px;
+        }
+
+        .chat-unread {
+            background: var(--whatsapp-green);
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .main-chat {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            background: var(--whatsapp-chat-bg);
+        }
+
+        .chat-header {
+            background: var(--whatsapp-header);
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid var(--gray);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .chat-header-info {
+            flex: 1;
+        }
+
+        .chat-header-name {
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .chat-header-status {
+            font-size: 12px;
+            color: var(--secondary);
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            background: var(--whatsapp-chat-bg);
+        }
+
+        .message {
+            max-width: 70%;
+            padding: 0.75rem 1rem;
+            border-radius: 0.75rem;
+            position: relative;
+            word-wrap: break-word;
+            font-size: 15px;
+            line-height: 1.4;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .message.own {
+            align-self: flex-end;
+            background: var(--whatsapp-green);
+            color: white;
+            border-radius: 0.75rem 0.25rem 0.25rem 0.75rem;
+        }
+
+        .message.other {
+            align-self: flex-start;
+            background: var(--whatsapp-bubble);
+            color: var(--whatsapp-text);
+            border-radius: 0.25rem 0.75rem 0.75rem 0.25rem;
+        }
+
+        .message-time {
+            font-size: 11px;
+            color: var(--secondary);
+            text-align: right;
+            margin-top: 4px;
+        }
+
+        .chat-input {
+            background: var(--whatsapp-header);
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-top: 1px solid var(--gray);
+        }
+
+        .input-icons {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--secondary);
+        }
+
+        .input-icons i {
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: color 0.2s;
+        }
+
+        .input-icons i:hover {
+            color: var(--whatsapp-dark);
+        }
+
+        .input-box {
+            flex: 1;
+            background: white;
+            border-radius: 1.5rem;
+            padding: 0.5rem 1rem;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .input-box input {
+            border: none;
+            outline: none;
+            background: transparent;
+            flex: 1;
+            font-size: 15px;
+        }
+
+        .send-button {
+            background: var(--whatsapp-green);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.2s;
+        }
+
+        .send-button:hover {
+            background: var(--whatsapp-darker);
+            transform: scale(1.05);
+        }
+
+        .message-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 4px;
+        }
+
+        .message-status {
+            font-size: 12px;
+            color: var(--secondary);
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+            }
+
+            .main-chat {
+                display: none;
+            }
+
+            .main-chat.active {
+                display: flex;
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                z-index: 1000;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <div class="user-info">
+                <div class="avatar">CS</div>
+                <div class="user-details">
+                    <div class="user-name">Customer Success</div>
+                    <div class="user-status">Online</div>
+                </div>
+            </div>
+            <div class="header-icons">
+                <i class="fas fa-users"></i>
+                <i class="fas fa-circle-dot"></i>
+                <i class="fas fa-message"></i>
+            </div>
+        </div>
+
+        <div class="search-container">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Search conversations...">
+            </div>
+        </div>
+
+        <div class="chat-list" id="chatList">
+            <!-- Chat items will be added here -->
+        </div>
+    </div>
+
+    <div class="main-chat" id="mainChat">
+        <div class="chat-header">
+            <div class="chat-avatar">CS</div>
+            <div class="chat-header-info">
+                <div class="chat-header-name">Customer Success FTE</div>
+                <div class="chat-header-status">Online</div>
+            </div>
+            <div class="header-icons">
+                <i class="fas fa-video"></i>
+                <i class="fas fa-phone"></i>
+                <i class="fas fa-ellipsis-vertical"></i>
+            </div>
+        </div>
+
+        <div class="chat-messages" id="chatMessages">
+            <div class="message other">
+                <div>Hello! 👋 Welcome to Customer Success FTE. How can I help you today?</div>
+                <div class="message-info">
+                    <span class="message-time">10:00 AM</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="chat-input">
+            <div class="input-icons">
+                <i class="fas fa-face-smile"></i>
+                <i class="fas fa-paperclip"></i>
+            </div>
+            <div class="input-box">
+                <input type="text" id="messageInput" placeholder="Type a message" onkeypress="handleKeyPress(event)">
+            </div>
+            <button class="send-button" onclick="sendMessage()">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Sample conversations data
+        const conversations = [
+            { id: 1, name: "Customer Success FTE", avatar: "CS", preview: "Hello! Welcome to Customer Success FTE", time: "10:00 AM", unread: 0 },
+            { id: 2, name: "Email Support", avatar: "ES", preview: "Your email has been received", time: "9:30 AM", unread: 2 },
+            { id: 3, name: "Web Form", avatar: "WF", preview: "Form submission received", time: "8:45 AM", unread: 1 },
+            { id: 4, name: "WhatsApp Support", avatar: "WS", preview: "Chat with us anytime", time: "7:20 AM", unread: 0 }
+        ];
+
+        const messages = [
+            { id: 1, text: "Hello! 👋 Welcome to Customer Success FTE. How can I help you today?", sender: "other", time: "10:00 AM" }
+        ];
+
+        // Initialize chat list
+        function initChatList() {
+            const chatList = document.getElementById('chatList');
+            chatList.innerHTML = '';
+
+            conversations.forEach(conv => {
+                const chatItem = document.createElement('div');
+                chatItem.className = 'chat-item';
+                chatItem.onclick = () => loadChat(conv.id);
+
+                chatItem.innerHTML = `
+                    <div class="chat-avatar">${conv.avatar}</div>
+                    <div class="chat-info">
+                        <div class="chat-header">
+                            <div class="chat-name">${conv.name}</div>
+                            <div class="chat-time">${conv.time}</div>
+                        </div>
+                        <div class="chat-preview">
+                            <i class="fas fa-check-double"></i>
+                            ${conv.preview}
+                        </div>
+                    </div>
+                `;
+
+                if (conv.unread > 0) {
+                    chatItem.innerHTML += `<div class="chat-unread">${conv.unread}</div>`;
+                }
+
+                chatList.appendChild(chatItem);
+            });
+        }
+
+        // Load chat
+        function loadChat(chatId) {
+            // In a real app, this would load the actual chat
+            // For demo, we'll just show the main chat area
+            document.querySelector('.main-chat').style.display = 'flex';
+            document.querySelector('.chat-header-name').textContent = conversations.find(c => c.id === chatId).name;
+        }
+
+        // Send message
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+
+            if (message) {
+                const now = new Date();
+                const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+                const messagesDiv = document.getElementById('chatMessages');
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'message own';
+                messageDiv.innerHTML = `
+                    <div>${message}</div>
+                    <div class="message-info">
+                        <span class="message-time">${time}</span>
+                        <span class="message-status"><i class="fas fa-check-double"></i></span>
+                    </div>
+                `;
+
+                messagesDiv.appendChild(messageDiv);
+                input.value = '';
+
+                // Auto scroll to bottom
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+                // Simulate reply after a delay
+                setTimeout(simulateReply, 1000);
+            }
+        }
+
+        // Simulate reply
+        function simulateReply() {
+            const replies = [
+                "I've received your message and will look into it.",
+                "Thanks for reaching out! How else can I help?",
+                "I understand your concern, let me assist you.",
+                "Great question! Let me provide more details.",
+                "I'll escalate this to our support team if needed."
+            ];
+
+            const reply = replies[Math.floor(Math.random() * replies.length)];
+            const now = new Date();
+            const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+            const messagesDiv = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message other';
+            messageDiv.innerHTML = `
+                <div>${reply}</div>
+                <div class="message-info">
+                    <span class="message-time">${time}</span>
+                </div>
+            `;
+
+            messagesDiv.appendChild(messageDiv);
+
+            // Auto scroll to bottom
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        // Handle enter key press
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', function() {
+            initChatList();
+
+            // Auto scroll to bottom
+            const messagesDiv = document.getElementById('chatMessages');
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        });
+    </script>
+</body>
+</html>
