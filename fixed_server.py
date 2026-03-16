@@ -170,11 +170,24 @@ class FixedRequestHandler(BaseHTTPRequestHandler):
                     user_name=user_name
                 )
 
+                # Determine overall status based on whether the main functionality worked
+                # (Ticket creation) rather than notification delivery
+                overall_status = "sent"  # Ticket was created successfully
+                delivery_status = "sent"
+
+                # Check if critical failures occurred
+                if (notification_result.get("status") == "failed" and
+                    agent_notification_result.get("status") == "failed"):
+                    delivery_status = "notifications_failed_but_ticket_created"
+                elif (notification_result.get("status") == "failed" or
+                      agent_notification_result.get("status") == "failed"):
+                    delivery_status = "partial_notifications_failed_but_ticket_created"
+
                 response = {
-                    "status": "sent",
+                    "status": overall_status,
                     "channel": "whatsapp",
                     "channel_message_id": f"whatsapp_{int(time.time())}",
-                    "delivery_status": "sent",
+                    "delivery_status": delivery_status,
                     "ticket_id": ticket_id,
                     "agent_response": agent_response,
                     "notification_sent": notification_result,
@@ -249,11 +262,24 @@ class FixedRequestHandler(BaseHTTPRequestHandler):
                     user_name=user_name
                 )
 
+                # Determine overall status based on whether the main functionality worked
+                # (Ticket creation) rather than notification delivery
+                overall_status = "sent"  # Ticket was created successfully
+                delivery_status = "sent"
+
+                # Check if critical failures occurred
+                if (notification_result.get("status") == "failed" and
+                    agent_notification_result.get("status") == "failed"):
+                    delivery_status = "notifications_failed_but_ticket_created"
+                elif (notification_result.get("status") == "failed" or
+                      agent_notification_result.get("status") == "failed"):
+                    delivery_status = "partial_notifications_failed_but_ticket_created"
+
                 response = {
-                    "status": "sent",
+                    "status": overall_status,
                     "channel": "email",
                     "channel_message_id": f"email_{int(time.time())}",
-                    "delivery_status": "sent",
+                    "delivery_status": delivery_status,
                     "ticket_id": ticket_id,
                     "agent_response": agent_response,
                     "notification_sent": notification_result,
@@ -327,9 +353,23 @@ class FixedRequestHandler(BaseHTTPRequestHandler):
                     user_name=user_name
                 )
 
+                # Determine overall status based on whether the main functionality worked
+                # (Ticket creation) rather than notification delivery
+                overall_status = "submitted"  # Ticket was created successfully
+                delivery_status = "sent"
+
+                # Check if critical failures occurred
+                if (notification_result.get("status") == "failed" and
+                    agent_notification_result.get("status") == "failed"):
+                    delivery_status = "notifications_failed_but_ticket_created"
+                elif (notification_result.get("status") == "failed" or
+                      agent_notification_result.get("status") == "failed"):
+                    delivery_status = "partial_notifications_failed_but_ticket_created"
+
                 response = {
-                    "status": "submitted",
+                    "status": overall_status,
                     "channel": "web_form",
+                    "delivery_status": delivery_status,
                     "ticket_id": ticket_id,
                     "message": "Your request has been submitted successfully",
                     "agent_response": agent_response,

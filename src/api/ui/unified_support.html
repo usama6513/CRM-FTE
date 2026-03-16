@@ -548,6 +548,12 @@
             border: 1px solid #5b1a29; /* Darker red border */
         }
 
+        .status.warning {
+            background: #391e0f; /* Dark amber background */
+            color: #fde68a; /* Light amber text for contrast */
+            border: 1px solid #92400e; /* Darker amber border */
+        }
+
         .message-time {
             font-size: 0.75rem;
             color: #94a3b8; /* Light gray for dark mode */
@@ -1072,17 +1078,32 @@
 
                 if (response.ok) {
                     const data = await response.json();
-                    result.className = 'status success';
-                    let resultHTML = `
-                        <i class="fas fa-check-circle"></i>
-                        <strong>Success!</strong> Your WhatsApp message has been sent successfully.
-                        <br>Message ID: ${data.channel_message_id}
-                        <br>Delivery Status: ${data.delivery_status}
-                    `;
 
-                    // Generate QR code for WhatsApp message
-                    const qrContainer = generateQRCode(data.channel_message_id, formData.body);
-                    result.innerHTML = resultHTML;
+                    // Check if notifications failed but ticket was created
+                    if (data.delivery_status && data.delivery_status.includes('notifications_failed')) {
+                        result.className = 'status warning';
+                        let resultHTML = `
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <strong>Submitted!</strong> Your ticket has been created successfully.
+                            <br>Ticket ID: ${data.ticket_id}
+                            <br>Agent Response: ${data.agent_response ? 'Available' : 'Processing...'}
+                            <br>Note: Notifications may not have been sent in development mode.
+                        `;
+                        result.innerHTML = resultHTML;
+                    } else {
+                        result.className = 'status success';
+                        let resultHTML = `
+                            <i class="fas fa-check-circle"></i>
+                            <strong>Success!</strong> Your WhatsApp message has been sent successfully.
+                            <br>Message ID: ${data.channel_message_id}
+                            <br>Ticket ID: ${data.ticket_id}
+                            <br>Delivery Status: ${data.delivery_status}
+                        `;
+
+                        // Generate QR code for WhatsApp message
+                        const qrContainer = generateQRCode(data.ticket_id || data.channel_message_id, formData.body);
+                        result.innerHTML = resultHTML;
+                    }
                     result.appendChild(qrContainer);
 
                     result.style.display = 'block';
@@ -1156,17 +1177,33 @@
 
                 if (response.ok) {
                     const data = await response.json();
-                    result.className = 'status success';
-                    let resultHTML = `
-                        <i class="fas fa-check-circle"></i>
-                        <strong>Success!</strong> Your email has been sent successfully.
-                        <br>Message ID: ${data.channel_message_id}
-                        <br>Subject: ${formData.subject}
-                    `;
 
-                    // Generate QR code for email
-                    const qrContainer = generateQRCode(data.channel_message_id, formData.subject);
-                    result.innerHTML = resultHTML;
+                    // Check if notifications failed but ticket was created
+                    if (data.delivery_status && data.delivery_status.includes('notifications_failed')) {
+                        result.className = 'status warning';
+                        let resultHTML = `
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <strong>Submitted!</strong> Your ticket has been created successfully.
+                            <br>Ticket ID: ${data.ticket_id}
+                            <br>Subject: ${formData.subject}
+                            <br>Agent Response: ${data.agent_response ? 'Available' : 'Processing...'}
+                            <br>Note: Notifications may not have been sent in development mode.
+                        `;
+                        result.innerHTML = resultHTML;
+                    } else {
+                        result.className = 'status success';
+                        let resultHTML = `
+                            <i class="fas fa-check-circle"></i>
+                            <strong>Success!</strong> Your email has been sent successfully.
+                            <br>Message ID: ${data.channel_message_id}
+                            <br>Ticket ID: ${data.ticket_id}
+                            <br>Subject: ${formData.subject}
+                        `;
+
+                        // Generate QR code for email
+                        const qrContainer = generateQRCode(data.ticket_id || data.channel_message_id, formData.subject);
+                        result.innerHTML = resultHTML;
+                    }
                     result.appendChild(qrContainer);
 
                     result.style.display = 'block';
@@ -1229,17 +1266,34 @@
 
                 if (response.ok) {
                     const data = await response.json();
-                    result.className = 'status success';
-                    let resultHTML = `
-                        <i class="fas fa-check-circle"></i>
-                        <strong>Success!</strong> Your ticket has been created successfully.
-                        <br>Ticket ID: ${data.ticket_id}
-                        <br>Our support team will respond within 2-4 hours.
-                    `;
 
-                    // Generate QR code for web form submission
-                    const qrContainer = generateQRCode(data.ticket_id, formData.message);
-                    result.innerHTML = resultHTML;
+                    // Check if notifications failed but ticket was created
+                    if (data.delivery_status && data.delivery_status.includes('notifications_failed')) {
+                        result.className = 'status warning';
+                        let resultHTML = `
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <strong>Submitted!</strong> Your ticket has been created successfully.
+                            <br>Ticket ID: ${data.ticket_id}
+                            <br>Subject: ${formData.subject || formData.category || 'Support Request'}
+                            <br>Agent Response: ${data.agent_response ? 'Available' : 'Processing...'}
+                            <br>Note: Notifications may not have been sent in development mode.
+                        `;
+                        result.innerHTML = resultHTML;
+                    } else {
+                        result.className = 'status success';
+                        let resultHTML = `
+                            <i class="fas fa-check-circle"></i>
+                            <strong>Success!</strong> Your ticket has been created successfully.
+                            <br>Ticket ID: ${data.ticket_id}
+                            <br>Subject: ${formData.subject || formData.category || 'Support Request'}
+                            <br>Agent Response: ${data.agent_response ? 'Available' : 'Processing...'}
+                            <br>Our support team will respond soon.
+                        `;
+
+                        // Generate QR code for web form submission
+                        const qrContainer = generateQRCode(data.ticket_id, formData.message);
+                        result.innerHTML = resultHTML;
+                    }
                     result.appendChild(qrContainer);
 
                     result.style.display = 'block';

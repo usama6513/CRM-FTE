@@ -7,10 +7,17 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import os
-from twilio.rest import Client
 from typing import Dict, Any
-from datetime import datetime
+from datetime import datetime, timezone
 import json
+
+# Only import Twilio if the environment variables are set
+try:
+    from twilio.rest import Client
+    TWILIO_AVAILABLE = True
+except ImportError:
+    TWILIO_AVAILABLE = False
+    Client = None
 
 
 class NotificationService:
@@ -42,7 +49,8 @@ class NotificationService:
             message_body += f"Submitted: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n"
             message_body += f"Thank you for contacting our support team! We will respond to your ticket shortly."
 
-            if self.twilio_account_sid and self.twilio_auth_token:
+            # Check if Twilio is available and credentials are provided
+            if TWILIO_AVAILABLE and self.twilio_account_sid and self.twilio_auth_token:
                 # Production mode - send actual WhatsApp message
                 client = Client(self.twilio_account_sid, self.twilio_auth_token)
                 message = client.messages.create(
@@ -58,6 +66,7 @@ class NotificationService:
                 }
             else:
                 # Mock mode - for development
+                print(f"Mock WhatsApp message to {phone_number}: {message_body[:50]}...")
                 return {
                     'status': 'sent',
                     'channel_message_id': f'mock_{hash(message_body)}',
@@ -67,6 +76,7 @@ class NotificationService:
                 }
         except Exception as e:
             # Return error status but don't crash the application
+            print(f"WhatsApp notification error: {str(e)}")
             return {
                 'status': 'failed',
                 'error': str(e),
