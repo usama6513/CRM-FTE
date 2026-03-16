@@ -8,11 +8,8 @@ A comprehensive customer support platform that integrates multiple communication
 - **AI-Powered Customer Success Agent**: Intelligent responses using OpenAI API
 - **Real-Time Interface**: Event-driven architecture with message streaming
 - **QR Code Ticket Tracking**: Visual identification for support tickets
-- **Channel-Specific Notifications**: Automatic confirmation messages sent back to users via their original channel (WhatsApp, Email)
-- **AI Customer Success Agent**: Intelligent responses using OpenAI API that processes queries and sends responses back to users
 - **Dark Theme UI**: Modern interface with navy blue theme and colored channel indicators
 - **Professional Dashboard**: Analytics and activity tracking for support teams
-- **Ticket Management System**: Track and manage customer support tickets with status updates
 
 ## Channels
 
@@ -63,11 +60,9 @@ A comprehensive customer support platform that integrates multiple communication
 
 ## API Endpoints
 
-- `POST /api/whatsapp/send` - Send WhatsApp message, receive ticket confirmation and AI response
-- `POST /api/email/send` - Send email message, receive ticket confirmation and AI response
-- `POST /api/web-form/submit` - Submit web form, receive ticket confirmation and AI response
-- `GET /api/ticket/{ticket_id}` - Retrieve ticket status and information
-- `GET /api/agent/test` - Test the AI customer success agent
+- `POST /api/whatsapp/send` - Send WhatsApp message and receive confirmation
+- `POST /api/email/send` - Send email message and receive confirmation
+- `POST /api/web-form/submit` - Submit web form and receive confirmation
 
 ## Deployment
 
@@ -78,8 +73,6 @@ The application is ready for deployment on Heroku, DigitalOcean, or similar plat
 - `fixed_server.py` - Main server application
 - `src/api/ui/unified_support.html` - Main dashboard UI
 - `src/agent/customer_success_agent.py` - AI agent implementation
-- `src/notifications/notification_service.py` - Channel-specific notification system
-- `src/tickets/ticket_storage.py` - Ticket management system
 - `Procfile` - Deployment configuration
 - `requirements.txt` - Python dependencies
 

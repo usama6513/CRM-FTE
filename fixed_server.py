@@ -4,11 +4,10 @@ Fixed version of Customer Success FTE API that properly handles route matching
 """
 
 import json
-from datetime import datetime, timezone
+from datetime import datetime
 import os
 import sys
 from pathlib import Path
-import uuid
 
 # Add the project root to the path
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
@@ -20,17 +19,7 @@ import threading
 import webbrowser
 import time
 
-# Import notification service
-from src.notifications.notification_service import NotificationService
-from src.tickets.ticket_storage import ticket_manager
-from src.agent.customer_success_agent import CustomerSuccessAgent
-
 class FixedRequestHandler(BaseHTTPRequestHandler):
-    def __init__(self, *args, **kwargs):
-        self.notification_service = NotificationService()
-        self.customer_success_agent = CustomerSuccessAgent()
-        super().__init__(*args, **kwargs)
-
     def do_GET(self):
         # Get the UI directory path
         ui_dir = os.path.join(os.path.dirname(__file__), 'src', 'api', 'ui')
@@ -93,7 +82,7 @@ class FixedRequestHandler(BaseHTTPRequestHandler):
                 "status": "healthy",
                 "message": "Customer Success FTE API is running",
                 "version": "2.0.0",
-                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "timestamp": datetime.utcnow().isoformat(),
                 "endpoints": [
                     "/",
                     "/dashboard",
@@ -118,81 +107,12 @@ class FixedRequestHandler(BaseHTTPRequestHandler):
             # Handle WhatsApp message
             try:
                 data = json.loads(post_data)
-                ticket_id = f"ticket_{uuid.uuid4()}"
-
-                # Prepare customer information
-                phone_number = data.get('phone_number', data.get('to', ''))
-                user_name = data.get('name', data.get('user_name', ''))
-                message_content = data.get('message', data.get('content', ''))
-
-                customer_info = {
-                    "name": user_name,
-                    "phone": phone_number,
-                    "channel": "whatsapp"
-                }
-
-                # Create ticket in the system
-                ticket = ticket_manager.create_ticket(
-                    channel="whatsapp",
-                    customer_info=customer_info,
-                    query=message_content
-                )
-                ticket_id = ticket["id"]
-
-                # Process the query with the Customer Success Agent
-                agent_response = self.customer_success_agent.process_query(
-                    message=message_content,
-                    channel_info=customer_info,
-                    channel="whatsapp"
-                )
-
-                # Add agent response to the ticket
-                ticket_manager.add_message_to_ticket(
-                    ticket_id=ticket_id,
-                    role="agent",
-                    content=agent_response["response"]
-                )
-
-                # Send initial confirmation to user via WhatsApp (ticket ID)
-                notification_result = self.notification_service.send_confirmation_whatsapp(
-                    phone_number=phone_number,
-                    ticket_id=ticket_id,
-                    query=message_content,
-                    user_name=user_name
-                )
-
-                # Also send the detailed agent response to user via WhatsApp
-                # Note: In production, you might only send one message with all info
-                agent_notification_result = self.notification_service.send_confirmation_whatsapp(
-                    phone_number=phone_number,
-                    ticket_id=ticket_id,
-                    query=agent_response["response"],
-                    user_name=user_name
-                )
-
-                # Determine overall status based on whether the main functionality worked
-                # (Ticket creation) rather than notification delivery
-                overall_status = "sent"  # Ticket was created successfully
-                delivery_status = "sent"
-
-                # Check if critical failures occurred
-                if (notification_result.get("status") == "failed" and
-                    agent_notification_result.get("status") == "failed"):
-                    delivery_status = "notifications_failed_but_ticket_created"
-                elif (notification_result.get("status") == "failed" or
-                      agent_notification_result.get("status") == "failed"):
-                    delivery_status = "partial_notifications_failed_but_ticket_created"
-
                 response = {
-                    "status": overall_status,
+                    "status": "sent",
                     "channel": "whatsapp",
                     "channel_message_id": f"whatsapp_{int(time.time())}",
-                    "delivery_status": delivery_status,
-                    "ticket_id": ticket_id,
-                    "agent_response": agent_response,
-                    "notification_sent": notification_result,
-                    "agent_notification_sent": agent_notification_result,
-                    "timestamp": datetime.now(timezone.utc).isoformat()
+                    "delivery_status": "sent",
+                    "timestamp": datetime.utcnow().isoformat()
                 }
                 self.send_response(200)
                 self.send_header('Content-type', 'application/json')
@@ -206,85 +126,12 @@ class FixedRequestHandler(BaseHTTPRequestHandler):
             # Handle email message
             try:
                 data = json.loads(post_data)
-                ticket_id = f"ticket_{uuid.uuid4()}"
-
-                # Prepare customer information
-                to_email = data.get('email', data.get('to', ''))
-                user_name = data.get('name', data.get('user_name', ''))
-                message_content = data.get('message', data.get('content', ''))
-                subject = data.get('subject', 'Support Request')
-
-                customer_info = {
-                    "name": user_name,
-                    "email": to_email,
-                    "channel": "email"
-                }
-
-                # Create ticket in the system
-                ticket = ticket_manager.create_ticket(
-                    channel="email",
-                    customer_info=customer_info,
-                    query=message_content,
-                    category=subject
-                )
-                ticket_id = ticket["id"]
-
-                # Process the query with the Customer Success Agent
-                agent_response = self.customer_success_agent.process_query(
-                    message=message_content,
-                    channel_info=customer_info,
-                    channel="email"
-                )
-
-                # Add agent response to the ticket
-                ticket_manager.add_message_to_ticket(
-                    ticket_id=ticket_id,
-                    role="agent",
-                    content=agent_response["response"]
-                )
-
-                # Send initial confirmation to user via email (ticket ID)
-                notification_result = self.notification_service.send_confirmation_email(
-                    email_address=to_email,
-                    ticket_id=ticket_id,
-                    query=message_content,
-                    subject=subject,
-                    user_name=user_name
-                )
-
-                # Also send the detailed agent response to user via email
-                # Note: In production you might combine these into one email
-                agent_notification_result = self.notification_service.send_confirmation_email(
-                    email_address=to_email,
-                    ticket_id=ticket_id,
-                    query=agent_response["response"],
-                    subject=f"Re: {subject}" if not subject.startswith('Re:') else subject,
-                    user_name=user_name
-                )
-
-                # Determine overall status based on whether the main functionality worked
-                # (Ticket creation) rather than notification delivery
-                overall_status = "sent"  # Ticket was created successfully
-                delivery_status = "sent"
-
-                # Check if critical failures occurred
-                if (notification_result.get("status") == "failed" and
-                    agent_notification_result.get("status") == "failed"):
-                    delivery_status = "notifications_failed_but_ticket_created"
-                elif (notification_result.get("status") == "failed" or
-                      agent_notification_result.get("status") == "failed"):
-                    delivery_status = "partial_notifications_failed_but_ticket_created"
-
                 response = {
-                    "status": overall_status,
+                    "status": "sent",
                     "channel": "email",
                     "channel_message_id": f"email_{int(time.time())}",
-                    "delivery_status": delivery_status,
-                    "ticket_id": ticket_id,
-                    "agent_response": agent_response,
-                    "notification_sent": notification_result,
-                    "agent_notification_sent": agent_notification_result,
-                    "timestamp": datetime.now(timezone.utc).isoformat()
+                    "delivery_status": "sent",
+                    "timestamp": datetime.utcnow().isoformat()
                 }
                 self.send_response(200)
                 self.send_header('Content-type', 'application/json')
@@ -298,84 +145,12 @@ class FixedRequestHandler(BaseHTTPRequestHandler):
             # Handle web form submission (support both endpoints for compatibility)
             try:
                 data = json.loads(post_data)
-
-                # Prepare customer information
-                email_address = data.get('email', data.get('email_address', ''))
-                user_name = data.get('name', data.get('user_name', ''))
-                subject = data.get('subject', data.get('category', 'Support Request'))
-                message_content = data.get('message', data.get('how_can_we_help', data.get('content', '')))
-                category = data.get('category', 'general')
-
-                customer_info = {
-                    "name": user_name,
-                    "email": email_address,
-                    "channel": "web_form"
-                }
-
-                # Create ticket in the system
-                ticket = ticket_manager.create_ticket(
-                    channel="web_form",
-                    customer_info=customer_info,
-                    query=message_content,
-                    category=category
-                )
-                ticket_id = ticket["id"]
-
-                # Process the query with the Customer Success Agent
-                agent_response = self.customer_success_agent.process_query(
-                    message=message_content,
-                    channel_info=customer_info,
-                    channel="web_form"
-                )
-
-                # Add agent response to the ticket
-                ticket_manager.add_message_to_ticket(
-                    ticket_id=ticket_id,
-                    role="agent",
-                    content=agent_response["response"]
-                )
-
-                # Send initial confirmation to user via email (ticket ID)
-                notification_result = self.notification_service.send_confirmation_web_form(
-                    email_address=email_address,
-                    ticket_id=ticket_id,
-                    query=message_content,
-                    subject=subject,
-                    user_name=user_name
-                )
-
-                # Also send the detailed agent response to user via email
-                agent_notification_result = self.notification_service.send_confirmation_web_form(
-                    email_address=email_address,
-                    ticket_id=ticket_id,
-                    query=agent_response["response"],
-                    subject=f"Re: {subject}" if not subject.startswith('Re:') else subject,
-                    user_name=user_name
-                )
-
-                # Determine overall status based on whether the main functionality worked
-                # (Ticket creation) rather than notification delivery
-                overall_status = "submitted"  # Ticket was created successfully
-                delivery_status = "sent"
-
-                # Check if critical failures occurred
-                if (notification_result.get("status") == "failed" and
-                    agent_notification_result.get("status") == "failed"):
-                    delivery_status = "notifications_failed_but_ticket_created"
-                elif (notification_result.get("status") == "failed" or
-                      agent_notification_result.get("status") == "failed"):
-                    delivery_status = "partial_notifications_failed_but_ticket_created"
-
                 response = {
-                    "status": overall_status,
+                    "status": "submitted",
                     "channel": "web_form",
-                    "delivery_status": delivery_status,
-                    "ticket_id": ticket_id,
+                    "ticket_id": f"ticket_{int(time.time())}",
                     "message": "Your request has been submitted successfully",
-                    "agent_response": agent_response,
-                    "notification_sent": notification_result,
-                    "agent_notification_sent": agent_notification_result,
-                    "timestamp": datetime.now(timezone.utc).isoformat()
+                    "timestamp": datetime.utcnow().isoformat()
                 }
                 self.send_response(200)
                 self.send_header('Content-type', 'application/json')
@@ -384,45 +159,6 @@ class FixedRequestHandler(BaseHTTPRequestHandler):
                 self.wfile.write(json.dumps(response).encode('utf-8'))
             except Exception as e:
                 self.send_error(400, f"Invalid JSON: {str(e)}")
-
-        elif self.path.startswith('/api/ticket/'):
-            # Handle ticket status retrieval
-            try:
-                ticket_id = self.path.split('/')[-1]
-                ticket = ticket_manager.get_ticket(ticket_id)
-
-                if ticket:
-                    self.send_response(200)
-                    self.send_header('Content-type', 'application/json')
-                    self.send_header('Access-Control-Allow-Origin', '*')
-                    self.end_headers()
-                    self.wfile.write(json.dumps(ticket).encode('utf-8'))
-                else:
-                    self.send_error(404, f"Ticket {ticket_id} not found")
-            except Exception as e:
-                self.send_error(500, f"Error retrieving ticket: {str(e)}")
-
-        elif self.path == '/api/agent/test':
-            # Test the agent functionality
-            try:
-                test_response = self.customer_success_agent.process_query(
-                    message="How do I reset my password?",
-                    channel_info={"email": "test@example.com", "name": "Test User"},
-                    channel="email"
-                )
-
-                response = {
-                    "test_query": "How do I reset my password?",
-                    "agent_response": test_response,
-                    "timestamp": datetime.now(timezone.utc).isoformat()
-                }
-                self.send_response(200)
-                self.send_header('Content-type', 'application/json')
-                self.send_header('Access-Control-Allow-Origin', '*')
-                self.end_headers()
-                self.wfile.write(json.dumps(response).encode('utf-8'))
-            except Exception as e:
-                self.send_error(500, f"Error testing agent: {str(e)}")
 
         else:
             self.send_error(404, "API endpoint not found")
