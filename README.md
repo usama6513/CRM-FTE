@@ -8,8 +8,10 @@ A comprehensive customer support platform that integrates multiple communication
 - **AI-Powered Customer Success Agent**: Intelligent responses using OpenAI API
 - **Real-Time Interface**: Event-driven architecture with message streaming
 - **QR Code Ticket Tracking**: Visual identification for support tickets
+- **Channel-Specific Notifications**: Automatic confirmation messages sent back to users via their original channel (WhatsApp, Email)
 - **Dark Theme UI**: Modern interface with navy blue theme and colored channel indicators
 - **Professional Dashboard**: Analytics and activity tracking for support teams
+- **Ticket Management System**: Track and manage customer support tickets with status updates
 
 ## Channels
 
@@ -38,7 +40,14 @@ A comprehensive customer support platform that integrates multiple communication
    ```bash
    pip install -r requirements.txt
    ```
-3. Set up environment variables (for development, the system uses mock API keys)
+3. Set up environment variables (for development, the system uses mock API keys):
+   - `OPENAI_API_KEY`: Your OpenAI API key (for AI functionality)
+   - `TWILIO_ACCOUNT_SID`: Your Twilio account SID (for WhatsApp notifications)
+   - `TWILIO_AUTH_TOKEN`: Your Twilio auth token
+   - `TWILIO_WHATSAPP_NUMBER`: Your Twilio WhatsApp number (format: whatsapp:+14155238886)
+   - `SMTP_USERNAME`: Your email service username (for email notifications)
+   - `SMTP_PASSWORD`: Your email service password
+   - `FROM_EMAIL`: Sender email address
 4. Run the server:
    ```bash
    python fixed_server.py
@@ -51,6 +60,13 @@ A comprehensive customer support platform that integrates multiple communication
 3. Use the respective interface to send/receive messages
 4. Track tickets with QR codes and dashboard analytics
 
+## API Endpoints
+
+- `POST /api/whatsapp/send` - Send WhatsApp message and receive ticket confirmation
+- `POST /api/email/send` - Send email message and receive ticket confirmation
+- `POST /api/web-form/submit` - Submit web form and receive ticket confirmation
+- `GET /api/ticket/{ticket_id}` - Retrieve ticket status and information
+
 ## Deployment
 
 The application is ready for deployment on Heroku, DigitalOcean, or similar platforms with Procfile configuration included.
@@ -60,6 +76,8 @@ The application is ready for deployment on Heroku, DigitalOcean, or similar plat
 - `fixed_server.py` - Main server application
 - `src/api/ui/unified_support.html` - Main dashboard UI
 - `src/agent/customer_success_agent.py` - AI agent implementation
+- `src/notifications/notification_service.py` - Channel-specific notification system
+- `src/tickets/ticket_storage.py` - Ticket management system
 - `Procfile` - Deployment configuration
 - `requirements.txt` - Python dependencies
 
