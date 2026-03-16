@@ -9,6 +9,7 @@ A comprehensive customer support platform that integrates multiple communication
 - **Real-Time Interface**: Event-driven architecture with message streaming
 - **QR Code Ticket Tracking**: Visual identification for support tickets
 - **Channel-Specific Notifications**: Automatic confirmation messages sent back to users via their original channel (WhatsApp, Email)
+- **AI Customer Success Agent**: Intelligent responses using OpenAI API that processes queries and sends responses back to users
 - **Dark Theme UI**: Modern interface with navy blue theme and colored channel indicators
 - **Professional Dashboard**: Analytics and activity tracking for support teams
 - **Ticket Management System**: Track and manage customer support tickets with status updates
@@ -62,10 +63,11 @@ A comprehensive customer support platform that integrates multiple communication
 
 ## API Endpoints
 
-- `POST /api/whatsapp/send` - Send WhatsApp message and receive ticket confirmation
-- `POST /api/email/send` - Send email message and receive ticket confirmation
-- `POST /api/web-form/submit` - Submit web form and receive ticket confirmation
+- `POST /api/whatsapp/send` - Send WhatsApp message, receive ticket confirmation and AI response
+- `POST /api/email/send` - Send email message, receive ticket confirmation and AI response
+- `POST /api/web-form/submit` - Submit web form, receive ticket confirmation and AI response
 - `GET /api/ticket/{ticket_id}` - Retrieve ticket status and information
+- `GET /api/agent/test` - Test the AI customer success agent
 
 ## Deployment
 

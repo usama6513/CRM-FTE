@@ -23,10 +23,12 @@ import time
 # Import notification service
 from src.notifications.notification_service import NotificationService
 from src.tickets.ticket_storage import ticket_manager
+from src.agent.customer_success_agent import CustomerSuccessAgent
 
 class FixedRequestHandler(BaseHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         self.notification_service = NotificationService()
+        self.customer_success_agent = CustomerSuccessAgent()
         super().__init__(*args, **kwargs)
 
     def do_GET(self):
@@ -137,11 +139,34 @@ class FixedRequestHandler(BaseHTTPRequestHandler):
                 )
                 ticket_id = ticket["id"]
 
-                # Send notification back to user via WhatsApp
+                # Process the query with the Customer Success Agent
+                agent_response = self.customer_success_agent.process_query(
+                    message=message_content,
+                    channel_info=customer_info,
+                    channel="whatsapp"
+                )
+
+                # Add agent response to the ticket
+                ticket_manager.add_message_to_ticket(
+                    ticket_id=ticket_id,
+                    role="agent",
+                    content=agent_response["response"]
+                )
+
+                # Send initial confirmation to user via WhatsApp (ticket ID)
                 notification_result = self.notification_service.send_confirmation_whatsapp(
                     phone_number=phone_number,
                     ticket_id=ticket_id,
                     query=message_content,
+                    user_name=user_name
+                )
+
+                # Also send the detailed agent response to user via WhatsApp
+                # Note: In production, you might only send one message with all info
+                agent_notification_result = self.notification_service.send_confirmation_whatsapp(
+                    phone_number=phone_number,
+                    ticket_id=ticket_id,
+                    query=agent_response["response"],
                     user_name=user_name
                 )
 
@@ -151,7 +176,9 @@ class FixedRequestHandler(BaseHTTPRequestHandler):
                     "channel_message_id": f"whatsapp_{int(time.time())}",
                     "delivery_status": "sent",
                     "ticket_id": ticket_id,
+                    "agent_response": agent_response,
                     "notification_sent": notification_result,
+                    "agent_notification_sent": agent_notification_result,
                     "timestamp": datetime.now(timezone.utc).isoformat()
                 }
                 self.send_response(200)
@@ -189,12 +216,36 @@ class FixedRequestHandler(BaseHTTPRequestHandler):
                 )
                 ticket_id = ticket["id"]
 
-                # Send notification back to user via email
+                # Process the query with the Customer Success Agent
+                agent_response = self.customer_success_agent.process_query(
+                    message=message_content,
+                    channel_info=customer_info,
+                    channel="email"
+                )
+
+                # Add agent response to the ticket
+                ticket_manager.add_message_to_ticket(
+                    ticket_id=ticket_id,
+                    role="agent",
+                    content=agent_response["response"]
+                )
+
+                # Send initial confirmation to user via email (ticket ID)
                 notification_result = self.notification_service.send_confirmation_email(
                     email_address=to_email,
                     ticket_id=ticket_id,
                     query=message_content,
                     subject=subject,
+                    user_name=user_name
+                )
+
+                # Also send the detailed agent response to user via email
+                # Note: In production you might combine these into one email
+                agent_notification_result = self.notification_service.send_confirmation_email(
+                    email_address=to_email,
+                    ticket_id=ticket_id,
+                    query=agent_response["response"],
+                    subject=f"Re: {subject}" if not subject.startswith('Re:') else subject,
                     user_name=user_name
                 )
 
@@ -204,7 +255,9 @@ class FixedRequestHandler(BaseHTTPRequestHandler):
                     "channel_message_id": f"email_{int(time.time())}",
                     "delivery_status": "sent",
                     "ticket_id": ticket_id,
+                    "agent_response": agent_response,
                     "notification_sent": notification_result,
+                    "agent_notification_sent": agent_notification_result,
                     "timestamp": datetime.now(timezone.utc).isoformat()
                 }
                 self.send_response(200)
@@ -242,7 +295,21 @@ class FixedRequestHandler(BaseHTTPRequestHandler):
                 )
                 ticket_id = ticket["id"]
 
-                # Send notification back to user via email
+                # Process the query with the Customer Success Agent
+                agent_response = self.customer_success_agent.process_query(
+                    message=message_content,
+                    channel_info=customer_info,
+                    channel="web_form"
+                )
+
+                # Add agent response to the ticket
+                ticket_manager.add_message_to_ticket(
+                    ticket_id=ticket_id,
+                    role="agent",
+                    content=agent_response["response"]
+                )
+
+                # Send initial confirmation to user via email (ticket ID)
                 notification_result = self.notification_service.send_confirmation_web_form(
                     email_address=email_address,
                     ticket_id=ticket_id,
@@ -251,12 +318,23 @@ class FixedRequestHandler(BaseHTTPRequestHandler):
                     user_name=user_name
                 )
 
+                # Also send the detailed agent response to user via email
+                agent_notification_result = self.notification_service.send_confirmation_web_form(
+                    email_address=email_address,
+                    ticket_id=ticket_id,
+                    query=agent_response["response"],
+                    subject=f"Re: {subject}" if not subject.startswith('Re:') else subject,
+                    user_name=user_name
+                )
+
                 response = {
                     "status": "submitted",
                     "channel": "web_form",
                     "ticket_id": ticket_id,
                     "message": "Your request has been submitted successfully",
+                    "agent_response": agent_response,
                     "notification_sent": notification_result,
+                    "agent_notification_sent": agent_notification_result,
                     "timestamp": datetime.now(timezone.utc).isoformat()
                 }
                 self.send_response(200)
@@ -283,6 +361,28 @@ class FixedRequestHandler(BaseHTTPRequestHandler):
                     self.send_error(404, f"Ticket {ticket_id} not found")
             except Exception as e:
                 self.send_error(500, f"Error retrieving ticket: {str(e)}")
+
+        elif self.path == '/api/agent/test':
+            # Test the agent functionality
+            try:
+                test_response = self.customer_success_agent.process_query(
+                    message="How do I reset my password?",
+                    channel_info={"email": "test@example.com", "name": "Test User"},
+                    channel="email"
+                )
+
+                response = {
+                    "test_query": "How do I reset my password?",
+                    "agent_response": test_response,
+                    "timestamp": datetime.now(timezone.utc).isoformat()
+                }
+                self.send_response(200)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps(response).encode('utf-8'))
+            except Exception as e:
+                self.send_error(500, f"Error testing agent: {str(e)}")
 
         else:
             self.send_error(404, "API endpoint not found")
