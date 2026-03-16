@@ -51,6 +51,18 @@ A comprehensive customer support platform that integrates multiple communication
    python fixed_server.py
    ```
 
+## For Real Deployment with Notifications
+
+To enable real notifications (WhatsApp, Email), you'll need to:
+
+1. For development with your own credentials, temporarily remove sensitive files from .gitignore:
+   ```bash
+   # Edit .gitignore to comment out sensitive files temporarily
+   ```
+2. Add your real `credentials.json`, `token.pickle`, and `.env` files
+3. Run the application
+4. For security, make sure to keep sensitive files in .gitignore when committing to remote repository
+
 ## Usage
 
 1. Access the dashboard at `http://localhost:8082/`
